@@ -3,7 +3,7 @@ import sys
 import importlib
 
 dps = []
-directory = "src/commands"
+directory = "src/handlers"
 
 for root, dirs, files in os.walk(directory):
     for file in files:

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mubble-template"
+name = "flower-store"
 version = "0.1.0"
 description = "Template for projects based on mubble framework"
 authors = ["vladislavkovalskyi <v.darknesssb@gmail.com>"]
@@ -9,6 +9,12 @@ readme = "README.md"
 python = "^3.12"
 mubble = "^1.2.3"
 envparse = "^0.2.0"
+openai = "^1.51.0"
+asyncpg = "^0.29.0"
+pillow = "^10.4.0"
+tortoise-orm = "^0.21.6"
+aioowm = "^2.0.1"
+pydantic = "^2.9.2"
 
 
 [build-system]

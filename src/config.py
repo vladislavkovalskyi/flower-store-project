@@ -1,33 +1,30 @@
 from envparse import env
-from mubble import API, Dispatch, LoopWrapper, Mubble, Token, logger
-
-from src import middlewares, commands
-
-logger.set_level("INFO")
+from tortoise import Tortoise
+from aioowm import OWM
 
 env.read_envfile(".env")
+
+BOT_TOKEN = env.str("BOT_TOKEN")
+OWNER_ID = env.int("OWNER_ID")
 
 DB_USERNAME = env.str("DB_USERNAME")
 DB_PASSWORD = env.str("DB_PASSWORD")
 DB_ADDRESS = env.str("DB_ADDRESS")
 DB_PORT = env.int("DB_PORT")
 
+OWM_TOKEN = env.str("OWM_TOKEN")
 
-async def setup_database(): ...
+
+weather_api = OWM(env.str("OWM_TOKEN"))
 
 
-def setup_app() -> Mubble:
-    dispatch = Dispatch()
-    dps = [*middlewares.dps, *commands.dps]
-    for dp in dps:
-        dispatch.load(dp)
+async def setup_database():
+    models = ("src.database.user", "src.database.product", "src.database.cart")
 
-    loop_wrapper = LoopWrapper(tasks=[setup_database()])
-
-    bot = Mubble(
-        api=API(Token.from_env(path_to_envfile=".env")),
-        dispatch=dispatch,
-        loop_wrapper=loop_wrapper,
+    await Tortoise.init(
+        # db_url="sqlite://:memory:",
+        db_url="sqlite://db.sqlite",
+        modules={"models": models},
     )
-
-    return bot
+    Tortoise.init_models(models, "models")
+    await Tortoise.generate_schemas()
