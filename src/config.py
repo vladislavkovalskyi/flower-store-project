@@ -13,13 +13,22 @@ DB_ADDRESS = env.str("DB_ADDRESS")
 DB_PORT = env.int("DB_PORT")
 
 OWM_TOKEN = env.str("OWM_TOKEN")
+OPENAI_TOKEN = env.str("OPENAI_TOKEN")
+OPENAI_ORGANIZATION = env.str("OPENAI_ORGANIZATION")
+OPENAI_PROJECT = env.str("OPENAI_PROJECT")
 
 
 weather_api = OWM(env.str("OWM_TOKEN"))
 
 
 async def setup_database():
-    models = ("src.database.user", "src.database.product", "src.database.cart")
+    models = (
+        "src.database.user",
+        "src.database.product",
+        "src.database.cart",
+        "src.database.chat_history",
+        "src.database.order",
+    )
 
     await Tortoise.init(
         # db_url="sqlite://:memory:",

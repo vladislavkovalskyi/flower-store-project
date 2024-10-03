@@ -1,7 +1,7 @@
 from mubble import ABCMiddleware, CallbackQuery, Dispatch, Message
 from mubble.bot.dispatch.context import Context
 
-from src.database import User, Cart
+from src.database import User, Cart, ChatHistory
 
 
 dp = Dispatch()
@@ -15,7 +15,10 @@ class MessageContextMiddleware(ABCMiddleware[Message]):
         if user is None:
             user = await User.create(uid=event.from_user.id)
             cart = await Cart.create()
+            chat_history = await ChatHistory.create()
+
             user.cart = cart
+            user.chat_history = chat_history
             await user.save()
 
         ctx.set("user", user)
@@ -30,7 +33,10 @@ class CallbackContextMiddleware(ABCMiddleware[CallbackQuery]):
         if user is None:
             user = await User.create(uid=event.from_user.id)
             cart = await Cart.create()
+            chat_history = await ChatHistory.create()
+
             user.cart = cart
+            user.chat_history = chat_history
             await user.save()
 
         ctx.set("user", user)

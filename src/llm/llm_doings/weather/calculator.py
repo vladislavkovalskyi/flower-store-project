@@ -1,3 +1,4 @@
+from src.config import weather_api
 from .enums import WeatherCodes
 
 
@@ -66,18 +67,41 @@ WEATHER_PRICE_MULTIPLIERS = {
 }
 
 
-def calculate_delivery_cost(
-    base_cost: float, weather_code: int, temperature: float
+async def get_weather(city: str):
+    result = await weather_api.get(city)
+
+    if result.error:
+        return {"error": True}
+
+    temperature: float = result.weather.temperature.now
+    weather_code: int = result.weather.id
+
+    return {
+        "error": False,
+        "temperature": temperature,
+        "weather_code": weather_code,
+    }
+
+
+async def calculate_delivery_cost(
+    city: str,
+    base_cost: float = 100.0,
 ) -> float:
     """
     # Calculate delivery cost based on weather and temperature
+    * `city` - city name
     * `base_cost` - base delivery cost
-    * `weather_code` - weather code
-    * `temperature` - temperature in Celsius
 
     ## Returns
     * `final_cost` - final delivery cost
     """
+    result = await get_weather(city)
+
+    if result["error"]:
+        return "Unknown city"
+    weather_code = result["weather_code"]
+    temperature = result["temperature"]
+
     weather_multiplier = WEATHER_PRICE_MULTIPLIERS.get(weather_code, 1.0)
     temperature_multiplier = (
         1.15 if temperature > 30 else 1.1 if temperature <= 0 else 1.0
@@ -86,4 +110,4 @@ def calculate_delivery_cost(
     multiplier = weather_multiplier + temperature_multiplier
     final_cost = base_cost * multiplier
 
-    return final_cost
+    return f"[Total delivery cost: {final_cost}]"
